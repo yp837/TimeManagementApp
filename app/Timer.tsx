@@ -4,7 +4,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 const Timer: React.FC = () => {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null); // 使用 useRef 来保存 interval
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); 
 
   useEffect(() => {
     if (isRunning && intervalRef.current === null) {
@@ -19,7 +19,6 @@ const Timer: React.FC = () => {
     }
 
     return () => {
-      // 组件卸载时清除 interval
       if (intervalRef.current !== null) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;

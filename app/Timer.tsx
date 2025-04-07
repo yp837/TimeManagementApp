@@ -1,39 +1,39 @@
-// Timer.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
 const Timer: React.FC = () => {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null); // Track the interval ID
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); 
 
   useEffect(() => {
-    // If the timer is running, set the interval
-    if (isRunning) {
-      const interval = setInterval(() => {
+    if (isRunning && intervalRef.current === null) {
+      intervalRef.current = setInterval(() => {
         setSeconds(prev => prev + 1);
       }, 1000);
-      setIntervalId(interval); // Save the interval ID
-    } else {
-      if (intervalId) {
-        clearInterval(intervalId); // Clear the interval when stopping the timer
-      }
+    }
+
+    if (!isRunning && intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId); // Cleanup on component unmount
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [isRunning, intervalId]); // Use `intervalId` as dependency
+  }, [isRunning]);
 
   const handleStartStop = () => {
-    setIsRunning(prev => !prev); // Toggle the timer state
+    setIsRunning(prev => !prev);
   };
 
   const handleReset = () => {
-    if (intervalId) {
-      clearInterval(intervalId); // Clear the interval when resetting
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
     setSeconds(0);
     setIsRunning(false);
